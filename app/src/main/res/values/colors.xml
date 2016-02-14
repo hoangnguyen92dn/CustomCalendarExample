@@ -1,0 +1,9 @@
+<?xm version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="today">#4b82ff</color>
+    <color name="greyed_out">#c7c7c7</color>
+    <color name="selected_day">#3F51B5</color>
+    <color name="calendar_header_background">#D50000</color>
+
+    <color name="calendar_header_text_color">#FFFFFF</color>
+</resources>
