@@ -123,6 +123,7 @@ public class CustomCalendar extends LinearLayout {
                 if (grid.getSelectedItemPosition() != position) {
                     grid.setSelection(position);
                     ((TextView) view).setTextColor(getResources().getColor(android.R.color.white));
+                    ((TextView) view).setTypeface(null, Typeface.BOLD);
                     grid.getChildAt(position).setBackgroundColor(getResources().getColor(R.color.selected_day));
                 }
             }
@@ -145,15 +146,21 @@ public class CustomCalendar extends LinearLayout {
 
         // determine the cell for current month's beginning
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        int monthBeginningCell = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-
-        // move calendar backwards to the beginning of the week
-        calendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell);
+        int monthBeginningCell = calendar.get(Calendar.DAY_OF_WEEK) - 2;
+        Log.d("Huey", "monthBeginningCell: " + monthBeginningCell);
 
         // fill cells
-        while (cells.size() < DAYS_COUNT) {
-            cells.add(calendar.getTime());
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int count = 0;
+        for (int i = 0; i < DAYS_COUNT; i++) {
+            if (i < monthBeginningCell || count >= days) {
+                cells.add(null);
+                calendar.add(Calendar.DAY_OF_MONTH, 0);
+            } else {
+                cells.add(calendar.getTime());
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                count++;
+            }
         }
 
         // update grid
@@ -182,50 +189,52 @@ public class CustomCalendar extends LinearLayout {
         public View getView(int position, View view, ViewGroup parent) {
             Log.d(LOGTAG, "Get View");
             // day in question
-            Calendar calendar = (Calendar) currentDate.clone();
-            calendar.setTime(getItem(position));
-            int day = calendar.get(Calendar.DATE);
-            int month = calendar.get(Calendar.MONTH) + 1;
-            int year = calendar.get(Calendar.YEAR);
-
             // inflate item if it does not exist yet
             if (view == null)
                 view = inflater.inflate(R.layout.custom_calendar_day, parent, false);
+            Calendar calendar = (Calendar) currentDate.clone();
+            if (getItem(position) != null) {
+                calendar.setTime(getItem(position));
+                int day = calendar.get(Calendar.DATE);
+                int month = calendar.get(Calendar.MONTH) + 1;
+                int year = calendar.get(Calendar.YEAR);
 
-            // if this day has an event, specify event image
-            view.setBackgroundResource(0);
-            Calendar eventCal = (Calendar) currentDate.clone();
-            if (eventDays != null) {
-                for (Date eventDate : eventDays) {
-                    eventCal.setTime(eventDate);
-                    Log.d(LOGTAG, "D: " + day + " || M: " + month + " || Y: " + year);
-                    if (eventCal.get(Calendar.DATE) == day
-                            && eventCal.get(Calendar.MONTH) + 1 == month
-                            && eventCal.get(Calendar.YEAR) == year) {
-                        // mark this day for event
-                        view.setBackgroundResource(R.drawable.ic_favorite_border_red_48dp);
-                        break;
+
+                // if this day has an event, specify event image
+                Calendar eventCal = (Calendar) currentDate.clone();
+                if (eventDays != null) {
+                    for (Date eventDate : eventDays) {
+                        eventCal.setTime(eventDate);
+                        Log.d(LOGTAG, "D: " + day + " || M: " + month + " || Y: " + year);
+                        if (eventCal.get(Calendar.DATE) == day
+                                && eventCal.get(Calendar.MONTH) + 1 == month
+                                && eventCal.get(Calendar.YEAR) == year) {
+                            // mark this day for event
+                            view.setBackgroundResource(R.drawable.ic_favorite_border_red_48dp);
+                            break;
+                        }
                     }
                 }
+
+                // clear styling
+                ((TextView) view).setTypeface(null, Typeface.NORMAL);
+                ((TextView) view).setTextColor(Color.BLACK);
+
+                if (month == Calendar.getInstance().get(Calendar.MONTH) + 1
+                        && day < Calendar.getInstance().get(Calendar.DATE)
+                        && year == Calendar.getInstance().get(Calendar.YEAR)
+                        || year < Calendar.getInstance().get(Calendar.YEAR)) {
+                    // if this day is outside current month, grey it out
+                    ((TextView) view).setTextColor(getResources().getColor(R.color.greyed_out));
+                } else if (day == Calendar.getInstance().get(Calendar.DATE)) {
+                    // if it is today, set it to blue/bold
+                    ((TextView) view).setTypeface(null, Typeface.BOLD);
+                    ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                }
+
+                // set text
+                ((TextView) view).setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
             }
-
-            // clear styling
-            ((TextView) view).setTypeface(null, Typeface.NORMAL);
-            ((TextView) view).setTextColor(Color.BLACK);
-
-            if (month != Calendar.getInstance().get(Calendar.MONTH) + 1
-                    || year != Calendar.getInstance().get(Calendar.YEAR)) {
-                // if this day is outside current month, grey it out
-                ((TextView) view).setTextColor(getResources().getColor(R.color.greyed_out));
-            } else if (day == Calendar.getInstance().get(Calendar.DATE)) {
-                // if it is today, set it to blue/bold
-                ((TextView) view).setTypeface(null, Typeface.BOLD);
-                ((TextView) view).setTextColor(getResources().getColor(R.color.today));
-            }
-
-            // set text
-            ((TextView) view).setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-
             return view;
         }
     }

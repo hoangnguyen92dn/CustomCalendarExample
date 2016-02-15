@@ -58,14 +58,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="@string/calendar_header_sun"
-            android:textColor="@color/calendar_header_text_color" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
             android:text="@string/calendar_header_mon"
             android:textColor="@color/calendar_header_text_color" />
 
@@ -108,12 +100,23 @@
             android:gravity="center_horizontal"
             android:text="@string/calendar_header_sat"
             android:textColor="@color/calendar_header_text_color" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="@string/calendar_header_sun"
+            android:textColor="@color/calendar_header_text_color" />
     </LinearLayout>
 
     <!-- days view -->
     <GridView
         android:id="@+id/calendar_grid"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/calendar_grid_height"
-        android:numColumns="7" />
+        android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
+        android:horizontalSpacing="1dp"
+        android:numColumns="7"
+        android:verticalSpacing="1dp" />
 </LinearLayout>
