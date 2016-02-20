@@ -44,6 +44,11 @@ public class MainActivity extends AppCompatActivity
                         .replace(R.id.container, CalendarFragment.newInstance());
                 fragmentTransaction.commit();
                 break;
+            case 1:
+            fragmentTransaction
+                    .replace(R.id.container, SwipeListViewFragment.newInstance());
+            fragmentTransaction.commit();
+                break;
             default:
                 return;
         }
